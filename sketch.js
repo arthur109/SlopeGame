@@ -2,26 +2,10 @@ var tileSize = 50;
 var tileRange = 3
 var rise = 0;
 var run = 3;
-class rocket {
-  constructor(xpos, ypos) {
-    this.xpos = xpos
-    this.ypos = ypos
-  }
-  display(rise, run) {
-    var angle = atan2(rise, -run);
-    push()
-    translate(this.xpos, this.ypos)
-    rotate(angle)
-    rect(-15, -5, 30, 10);
-    pop();
-  }
-  move(rise, run) {
-    this.ypos += -rise;
-    this.xpos += run;
-  }
-}
-
 var bob = new rocket(200, 200);
+var coinAnimation
+var john
+var background
 
 function isMouseOver(xPos, yPos, xWidth, yLength) {
   if (mouseX >= xPos && mouseY >= yPos && mouseX <= xPos + xWidth && mouseY <= yPos + yLength) {
@@ -30,12 +14,21 @@ function isMouseOver(xPos, yPos, xWidth, yLength) {
   return (false);
 }
 
+function preload() {
+  var frame1 = loadImage('Data/coin/bob.png')
+  var frame2 = loadImage("Data/coin/1.png")
+  var frame3 = loadImage("Data/coin/2.png")
+  coinAnimation = [frame1, frame2, frame3]
+  background = loadImage("Data/space.png")
+}
+
 function setup() {
-  createCanvas(400, 400);
+  createCanvas(800, 800);
+  john = new coin(-50, -50, 200, 200, coinAnimation)
 }
 
 function draw() {
-  background(220);
+  image(background, bob.xpos / 10 - 400, bob.ypos / 10 - 400, 2000, 1600)
   bob.display(rise, run);
   bob.move(rise, run);
   for (var y = -tileRange; y <= tileRange; y++) {
@@ -57,11 +50,11 @@ function draw() {
     rect(width / 2 + (y - 0.5) * (tileSize + 5), height - (tileSize + 10), tileSize, tileSize)
     text(y, width / 2 + (y - 0.5) * (tileSize + 5), height - (tileSize + 10))
   }
-
+  john.display()
+  john.move()
 }
 
 function keyReleased() {
-  console.log(key)
   if (key == "A" || key == "a") {
     if (rise != -tileRange) {
       rise = rise - 1
