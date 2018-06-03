@@ -9,6 +9,7 @@ class coin {
         this.yspeed = (goToX - xpos) / (goToY - ypos) * this.speed
         this.counter = 0
         this.animation = animation
+
     }
     display() {
         if (this.counter > this.animation.length) {
@@ -21,4 +22,21 @@ class coin {
         this.ypos += this.yspeed;
         this.xpos += this.xspeed;
     }
+
+    createNumOutside() {
+        var x = random(-500, width + 500);
+        var y = random(-500, height + 500);
+        while (isOver(x, y, -100, -100, width + 200, height + 200)) {
+            x = random(-500, width + 500);
+            y = random(-500, height + 500);
+        }
+    }
+
+    isOver(x, y xPos, yPos, xWidth, yLength) {
+        if (x >= xPos && y >= yPos && x <= xPos + xWidth && y <= yPos + yLength) {
+            return (true);
+        }
+        return (false);
+    }
+
 }
