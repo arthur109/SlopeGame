@@ -1,4 +1,4 @@
-var tileSize = 50;
+var tileSize = 55;
 var tileRange = 3
 var rise = 1;
 var run = 1;
@@ -17,6 +17,7 @@ var playHover
 var playPressed
 var HighScore = 0;
 var myFont;
+var tiles
 
 function isMouseOver(xPos, yPos, xWidth, yLength) {
   if (mouseX >= xPos && mouseY >= yPos && mouseX <= xPos + xWidth && mouseY <= yPos + yLength) {
@@ -58,6 +59,15 @@ function preload() {
   shipDamaged1 = [loadImage('Data/spaceShip/damaged1/1.png'), loadImage('Data/spaceShip/damaged1/2.png'), loadImage('Data/spaceShip/damaged1/3.png'), loadImage('Data/spaceShip/damaged1/4.png'), loadImage('Data/spaceShip/damaged1/5.png')]
   shipDamaged2 = [loadImage('Data/spaceShip/damaged2/1.png'), loadImage('Data/spaceShip/damaged2/2.png'), loadImage('Data/spaceShip/damaged2/3.png'), loadImage('Data/spaceShip/damaged2/4.png'), loadImage('Data/spaceShip/damaged2/5.png')]
   myFont = loadFont('Data/pixelated.ttf');
+  tiles = {
+    "-3": loadImage('Data/numberTiles/-3.png'),
+    "-2": loadImage('Data/numberTiles/-2.png'),
+    "-1": loadImage('Data/numberTiles/-1.png'),
+    "1": loadImage('Data/numberTiles/1.png'),
+    "2": loadImage('Data/numberTiles/2.png'),
+    "3": loadImage('Data/numberTiles/3.png'),
+    "selected": loadImage('Data/numberTiles/selection.png')
+  }
 }
 
 function setup() {
@@ -69,6 +79,7 @@ function setup() {
     coins.push(temp)
   }
   bob = new rocket(100, height - 100, shipNormal, shipDamaged1, shipDamaged2);
+  noSmooth()
 }
 
 function draw() {
@@ -105,29 +116,31 @@ function draw() {
         coins.push(temp)
       }
     }
-
+    fill(255)
+    textSize(30)
+    text("SCORE: " + score, 20, 40)
 
     for (var y = -tileRange; y <= tileRange; y++) {
-      fill(255)
-      if (y == rise) {
-        fill(255, 0, 0)
-      }
 
-      rect(width / 2 + (y - 0.5) * (tileSize + 5), height - (tileSize + 10) * 2, tileSize, tileSize)
-      text(y, width / 2 + (y - 0.5) * (tileSize + 5), height - (tileSize + 10) * 2)
+
+      image(tiles[str(y)], width / 2 + (y - 0.5) * (tileSize + 10), height - (tileSize + 10) * 2, tileSize, tileSize)
+
+      if (y == rise) {
+        image(tiles["selected"], width / 2 + (y - 0.5) * (tileSize + 10), height - (tileSize + 10) * 2, tileSize, tileSize)
+      }
+      //text(y, width / 2 + (y - 0.5) * (tileSize + 5), height - (tileSize + 10) * 2)
       if (y == -1) {
         y += 1
       }
     }
 
     for (var y = -tileRange; y <= tileRange; y++) {
-      fill(255)
-      if (y == run) {
-        fill(255, 0, 0)
-      }
 
-      rect(width / 2 + (y - 0.5) * (tileSize + 5), height - (tileSize + 10), tileSize, tileSize)
-      text(y, width / 2 + (y - 0.5) * (tileSize + 5), height - (tileSize + 10))
+      image(tiles[str(y)], width / 2 + (y - 0.5) * (tileSize + 10), height - (tileSize + 10), tileSize, tileSize)
+
+      if (y == run) {
+        image(tiles["selected"], width / 2 + (y - 0.5) * (tileSize + 10), height - (tileSize + 10), tileSize, tileSize)
+      }
 
       if (y == -1) {
         y += 1

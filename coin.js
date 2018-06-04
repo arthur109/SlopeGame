@@ -5,8 +5,8 @@ class coin {
         this.radius = 30
         this.frameRate = 0.2
         this.speed = 2
-        this.xspeed = (goToX - xpos) / 300
-        this.yspeed = (goToY - ypos) / 300
+        this.xspeed = (goToX - xpos) / 400
+        this.yspeed = (goToY - ypos) / 400
         this.counter = 0
         this.animation = animation
         this.insideCounter = false
