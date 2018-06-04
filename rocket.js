@@ -30,4 +30,11 @@ class rocket {
             this.currentAnimation = this.damaged2
         }
     }
+    outOfBounds(width, height) {
+        if (isOver(this.xpos, this.ypos, -300, -300, width + 600, heigh + 600)) {
+            return false
+        }
+        return true
+    }
+
 }
