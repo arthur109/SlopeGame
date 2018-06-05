@@ -155,7 +155,7 @@ function draw() {
     fill(255)
     textSize(30)
     text("SCORE: " + score, 20, 40)
-
+    text("LIFES: " + bob.life, 20, 40)
     for (var y = -tileRange; y <= tileRange; y++) {
 
 
