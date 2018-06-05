@@ -146,6 +146,9 @@ function draw() {
         asteroids.push(temp)
       }
     }
+    if(isOver(bob.xpos,bob.ypos,-300,-300,width+600,height+600)){
+      bob.life = 0;
+    }
     if (bob.life <= 0) {
       gameMode = 0
       clearReset();
