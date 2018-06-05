@@ -146,8 +146,10 @@ function draw() {
         asteroids.push(temp)
       }
     }
-    if(isOver(bob.xpos,bob.ypos,-300,-300,width+600,height+600)){
-      bob.life = 0;
+    if(isOver(bob.xpos,bob.ypos,-300,-300,width+600,height+600) == false){
+      bob.lowerLife();
+      bob.lowerLife();
+      bob.lowerLife();
     }
     if (bob.life <= 0) {
       gameMode = 0
