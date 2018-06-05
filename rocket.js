@@ -22,8 +22,8 @@ class rocket {
         this.ypos += -rise;
         this.xpos += run;
     }
-    lowerlife() {
-        this.life = this.life - 1;
+    lowerlife(damage) {
+        this.life = this.life - damage;
         if (this.life == 2) {
             this.currentAnimation = this.damaged1
         } else if (this.life == 1) {

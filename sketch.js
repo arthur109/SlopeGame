@@ -9,15 +9,19 @@ var shipDamaged1
 var shipDamaged2
 var background
 var coins = []
+var asteroids = []
 var coinNum = 10;
+var asteroidNum = 10;
 var score = 0;
 var gameMode = 0;
 var playNormal
 var playHover
 var playPressed
+var asteroid1
 var HighScore = 0;
 var myFont;
 var tiles
+var john;
 
 function isMouseOver(xPos, yPos, xWidth, yLength) {
   if (mouseX >= xPos && mouseY >= yPos && mouseX <= xPos + xWidth && mouseY <= yPos + yLength) {
@@ -68,18 +72,25 @@ function preload() {
     "3": loadImage('Data/numberTiles/3.png'),
     "selected": loadImage('Data/numberTiles/selection.png')
   }
+  asteroid1 = [loadImage('Data/asteroid/1/1.png'), loadImage('Data/asteroid/1/2.png'), loadImage('Data/asteroid/1/3.png'), loadImage('Data/asteroid/1/4.png')]
 }
 
 function setup() {
-  createCanvas(800, 800);
+  createCanvas(600, 600);
   textFont(myFont)
   for (var i = 0; i < coinNum; i++) {
     var position = createNumOutside()
     var temp = new coin(position.xpos, position.ypos, random(50, width - 50), random(50, height - 50), coinAnimation)
     coins.push(temp)
   }
+  for (var i = 0; i < asteroidNum; i++) {
+    var position = createNumOutside()
+    var temp = new asteroid(position.xpos, position.ypos, random(50, width - 50), random(50, height - 50), asteroid1, 1)
+    asteroids.push(temp)
+  }
   bob = new rocket(100, height - 100, shipNormal, shipDamaged1, shipDamaged2);
-  noSmooth()
+  //john = new asteroid(-300, -300, 200, 200, asteroid1, 1);
+  //noSmooth()
 }
 
 function draw() {
@@ -95,15 +106,15 @@ function draw() {
       image(playNormal, width / 2 - 230 / 2, height / 2 - 120 / 2, 230, 120)
     }
   } else if (gameMode == 1) {
-    image(background, bob.xpos / 10 - 400, bob.ypos / 10 - 400, 2000, 1600)
-    bob.display(rise, run);
-    bob.move(rise, run);
+    image(background, bob.xpos / 5 - 300, bob.ypos / 5 - 300, 2000, 1600)
+    bob.display(rise / 1.3, run / 1.3);
+    bob.move(rise / 1.3, run / 1.3);
     for (var i = 0; i < coinNum; i++) {
       coins[i].display();
       coins[i].move();
       if (coins[i].deathDetection(bob, width, height)) {
         score += 1;
-        console.log(score)
+        console.log("score: " + str(score))
         coins.splice(i, 1)
         var position = createNumOutside()
         var temp = new coin(position.xpos, position.ypos, random(50, width - 50), random(50, height - 50), coinAnimation)
@@ -116,6 +127,31 @@ function draw() {
         coins.push(temp)
       }
     }
+
+    for (var i = 0; i < asteroidNum; i++) {
+      asteroids[i].display();
+      asteroids[i].move();
+      if (asteroids[i].deathDetection(bob, width, height)) {
+        bob.lowerlife(asteroids[i].damage);
+        console.log("life: " + str(bob.life))
+        asteroids.splice(i, 1)
+        var position = createNumOutside()
+        var temp = new asteroid(position.xpos, position.ypos, random(50, width - 50), random(50, height - 50), asteroid1, 1)
+        asteroids.push(temp)
+      }
+      if (asteroids[i].outOfBounds(width, height)) {
+        asteroids.splice(i, 1)
+        var position = createNumOutside()
+        var temp = new asteroid(position.xpos, position.ypos, random(50, width - 50), random(50, height - 50), asteroid1, 1)
+        asteroids.push(temp)
+      }
+    }
+    if (bob.life <= 0) {
+      gameMode = 0
+      clearReset();
+    }
+    // john.display()
+    // john.move();
     fill(255)
     textSize(30)
     text("SCORE: " + score, 20, 40)
@@ -133,7 +169,8 @@ function draw() {
         y += 1
       }
     }
-
+    text("RISE", width / 2 - 32, height - (tileSize + 10) * 1.4)
+    text("RUN", width / 2 - 28, height - (tileSize + 10) * 0.4)
     for (var y = -tileRange; y <= tileRange; y++) {
 
       image(tiles[str(y)], width / 2 + (y - 0.5) * (tileSize + 10), height - (tileSize + 10), tileSize, tileSize)
@@ -194,11 +231,19 @@ function mouseReleased() {
 
 function clearReset() {
   coins = []
+  asteroids = []
   for (var i = 0; i < coinNum; i++) {
     var position = createNumOutside()
     var temp = new coin(position.xpos, position.ypos, random(50, width - 50), random(50, height - 50), coinAnimation)
     coins.push(temp)
   }
+  for (var i = 0; i < asteroidNum; i++) {
+    var position = createNumOutside()
+    var temp = new asteroid(position.xpos, position.ypos, random(50, width - 50), random(50, height - 50), asteroid1, 1)
+    asteroids.push(temp)
+  }
   bob = new rocket(100, height - 100, shipNormal, shipDamaged1, shipDamaged2);
   score = 0;
+  rise = 1
+  run = 1;
 }
