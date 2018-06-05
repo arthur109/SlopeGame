@@ -5,8 +5,8 @@ class asteroid {
         this.radius = 200
         this.frameRate = 0.3
         this.speed = 2
-        this.xspeed = (goToX - xpos) / 200
-        this.yspeed = (goToY - ypos) / 200
+        this.xspeed = (goToX - xpos) / 300
+        this.yspeed = (goToY - ypos) / 300
         this.animation = animation
         this.insideCounter = false
         this.damage = damage
