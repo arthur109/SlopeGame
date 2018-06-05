@@ -11,7 +11,7 @@ var background
 var coins = []
 var asteroids = []
 var coinNum = 10;
-var asteroidNum = 10;
+var asteroidNum = 3;
 var score = 0;
 var gameMode = 0;
 var playNormal
