@@ -11,7 +11,7 @@ var background
 var coins = []
 var asteroids = []
 var coinNum = 10;
-var asteroidNum = 3;
+var asteroidNum = 4;
 var score = 0;
 var gameMode = 0;
 var playNormal
@@ -22,6 +22,11 @@ var HighScore = 0;
 var myFont;
 var tiles
 var john;
+var playBackground;
+var youDead;
+var mouseRel = false;
+var alien;
+var alienFrames;
 
 function isMouseOver(xPos, yPos, xWidth, yLength) {
   if (mouseX >= xPos && mouseY >= yPos && mouseX <= xPos + xWidth && mouseY <= yPos + yLength) {
@@ -54,6 +59,8 @@ function preload() {
   playNormal = loadImage('Data/playButton/normal.png')
   playHover = loadImage('Data/playButton/hover.png')
   playPressed = loadImage('Data/playButton/pressed.png')
+  playBackground = loadImage('Data/playButton/playBackground.png')
+  youDead = loadImage('Data/playButton/youDead.png')
   var frame1 = loadImage('Data/coin/bob.png')
   var frame2 = loadImage("Data/coin/1.png")
   var frame3 = loadImage("Data/coin/2.png")
@@ -73,6 +80,7 @@ function preload() {
     "selected": loadImage('Data/numberTiles/selection.png')
   }
   asteroid1 = [loadImage('Data/asteroid/1/1.png'), loadImage('Data/asteroid/1/2.png'), loadImage('Data/asteroid/1/3.png'), loadImage('Data/asteroid/1/4.png')]
+  alienFrames = [loadImage('Data/alien/0.png'), loadImage('Data/alien/1.png')]
 }
 
 function setup() {
@@ -89,6 +97,7 @@ function setup() {
     asteroids.push(temp)
   }
   bob = new rocket(100, height - 100, shipNormal, shipDamaged1, shipDamaged2);
+  newAlien()
   //john = new asteroid(-300, -300, 200, 200, asteroid1, 1);
   //noSmooth()
 }
@@ -96,14 +105,18 @@ function setup() {
 function draw() {
   if (gameMode == 0) {
     image(background, bob.xpos / 10 - 400, bob.ypos / 10 - 400, 2000, 1600)
-    if (isMouseOver(width / 2 - 230 / 2, height / 2 - 120 / 2, 230, 120)) {
+    image(playBackground, 20, 20, width - 40, width - 40)
+    if (isMouseOver(width / 2 - 230 / 2, height / 2 + 60, 230, 120)) {
       if (mouseIsPressed) {
-        image(playPressed, width / 2 - 230 / 2, height / 2 - 120 / 2, 230, 120)
+        image(playPressed, width / 2 - 230 / 2, height / 2 + 60, 230, 120)
       } else {
-        image(playHover, width / 2 - 230 / 2, height / 2 - 120 / 2, 230, 120)
+        image(playHover, width / 2 - 230 / 2, height / 2 + 60, 230, 120)
+      }
+      if (mouseRel) {
+        gameMode = 1;
       }
     } else {
-      image(playNormal, width / 2 - 230 / 2, height / 2 - 120 / 2, 230, 120)
+      image(playNormal, width / 2 - 230 / 2, height / 2 + 60, 230, 120)
     }
   } else if (gameMode == 1) {
     image(background, bob.xpos / 5 - 300, bob.ypos / 5 - 300, 2000, 1600)
@@ -146,12 +159,24 @@ function draw() {
         asteroids.push(temp)
       }
     }
+    alien.display()
+    alien.move()
+    if (alien.deathDetection(bob, width, height)) {
+      bob.lowerlife(alien.damage);
+      console.log("hit alien - life: " + str(bob.life))
+      newAlien()
+    }
+    if (alien.outOfBounds(width, height)) {
+      newAlien()
+    }
+    console.log(alien.xpos, alien.ypos)
+
     if (isOver(bob.xpos, bob.ypos, -300, -300, width + 600, height + 600) == false) {
       bob.lowerlife(4);
       console.log(bob.life)
     }
     if (bob.life <= 0) {
-      gameMode = 0
+      gameMode = 2
       clearReset();
     }
     // john.display()
@@ -187,7 +212,27 @@ function draw() {
         y += 1
       }
     }
+  } else if (gameMode == 2) {
+    image(background, bob.xpos / 10 - 400, bob.ypos / 10 - 400, 2000, 1600)
+    image(youDead, 20, 20, width - 40, width - 40)
+    if (isMouseOver(width / 2 - 230 / 2, height / 2 + 60, 230, 120)) {
+      if (mouseIsPressed) {
+        image(playPressed, width / 2 - 230 / 2, height / 2 + 60, 230, 120)
+      } else {
+        image(playHover, width / 2 - 230 / 2, height / 2 + 60, 230, 120)
+      }
+      if (mouseRel) {
+        gameMode = 1;
+        score = 0;
+      }
+    } else {
+      image(playNormal, width / 2 - 230 / 2, height / 2 + 60, 230, 120)
+    }
+    fill(0)
+    var thing = "Score: " + str(score) + "   -    HighScore: " + str(HighScore);
+    text(thing, width / 2 - textWidth(thing) / 2, height - 92)
   }
+  mouseRel = false
 }
 
 function keyReleased() {
@@ -227,10 +272,11 @@ function keyReleased() {
 }
 
 function mouseReleased() {
-  if (gameMode == 0) {
-    gameMode = 1
-  }
-  clearReset();
+  //if (isMouseOver(width / 2 - 230 / 2, height / 2 + 60, 230, 120) && (gameMode == 1 || gameMode == 2)) {
+  //gameMode = 1;
+  mouseRel = true;
+  //}
+  //clearReset();
 }
 
 function clearReset() {
@@ -246,8 +292,15 @@ function clearReset() {
     var temp = new asteroid(position.xpos, position.ypos, random(50, width - 50), random(50, height - 50), asteroid1, 1)
     asteroids.push(temp)
   }
+  if (score > HighScore) {
+    HighScore = score
+  }
   bob = new rocket(100, height - 100, shipNormal, shipDamaged1, shipDamaged2);
-  score = 0;
   rise = 1
   run = 1;
+}
+
+function newAlien() {
+  alien = new asteroid(random(-2000, width + 2000), random(-2000, height + 2000), random(50, width - 50), random(50, height - 50), alienFrames, 3)
+  alien.radius = 100
 }
